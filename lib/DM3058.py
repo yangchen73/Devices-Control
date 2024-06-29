@@ -10,11 +10,8 @@ class DP3058:
         self.rm = pyvisa.ResourceManager()
         self.instrument = self.rm.open_resource(resource_name)
 
-        # 设置超时时间
-        self.instrument.timeout = 5000  # 5秒
         if reset:
             self.reset()
-
         # 检查连接
         if "RIGOL" in self.get_id():
             print("DP3058 connected successfully.")
