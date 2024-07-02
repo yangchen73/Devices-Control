@@ -1,6 +1,6 @@
 import pyvisa
 
-class DP3058:
+class DM3058:
     def __init__(self, resource_name, reset=True):
         """
         初始化DP3058万用表。
@@ -9,15 +9,18 @@ class DP3058:
         """
         self.rm = pyvisa.ResourceManager()
         self.instrument = self.rm.open_resource(resource_name)
+        
 
         if reset:
             self.reset()
         # 检查连接
         if "RIGOL" in self.get_id():
-            print("DP3058 connected successfully.")
+            print("DM3058 connected successfully.")
         else:
-            raise ValueError("Failed to connect to DP3058.")
+            raise ValueError("Failed to connect to DM3058.")
 
+
+        self.instrument.timeout = 2000
     def reset(self):
         """重置万用表"""
         self.instrument.write("*RST")
@@ -28,42 +31,139 @@ class DP3058:
 
     def get_id(self):
         """获取万用表的身份识别字符串"""
-        return self.instrument.query("*IDN?").strip()
+        return self.instrument.query("*IDN?").strip("\n")
 
     def set_function(self, function, mode=None):
-        """
-        设置测量功能及其模式。
-        
-        :param function: 测量功能，例如 'voltage'（电压）, 'current'（电流）, 'resistance'（电阻）
-        :param mode: 测量功能的模式，例如 'dc'（直流）, 'ac'（交流）, '2-wire'（二线制）, '4-wire'（四线制）
-        """
-        cmd = f":FUNC{function.upper()}"
+        """Set the current measurement function.
 
-        if function in ["voltage", "current"] and mode in [None, "dc", "ac"]:
-            cmd += f":{mode.upper()}"
-        elif function == "resistance" and mode in [None, "2-wire", "4-wire"]:
-            cmd += f":{mode.replace('2-wire', 'RES').replace('4-wire', 'FRES').upper()}"
+        Parameters
+        ----------
+        function : str
+            Measurement function: voltage, current, resistance, frequency, period,
+            continuity, diode, or capacitance.
+        mode : str or None
+            Mode of the measurement function. The valid modes for each function that
+            has multiple modes are:
+                voltage: dc (defualt), ac
+                current: dc (defualt), ac
+                resistance: 2-wire (defualt), 4-wire
+
+            If `None`, the default mode is selected.
+        """
+        cmd = ":FUNC"
+
+        if function == "voltage":
+            cmd += ":VOLT"
+            if (mode is None) or (mode == "dc"):
+                cmd += ":DC"
+            elif mode == "ac":
+                cmd += ":AC"
+            else:
+                raise ValueError(f"Invalid voltage mode: {mode}. Must be 'ac' or 'dc'.")
+        elif function == "current":
+            cmd += ":CURR"
+            if (mode is None) or (mode == "dc"):
+                cmd += ":DC"
+            elif mode == "ac":
+                cmd += ":AC"
+            else:
+                raise ValueError(f"Invalid current mode: {mode}. Must be 'ac' or 'dc'.")
+        elif function == "resistance":
+            if (mode is None) or (mode == "2-wire"):
+                cmd += ":RES"
+            elif mode == "4-wire":
+                cmd += ":FRES"
+            else:
+                raise ValueError(
+                    f"Invalid resistance mode: {mode}. Must be '2-wire' or '4-wire'."
+                )
+        elif function == "frequency":
+            cmd += ":FREQ"
+        elif function == "period":
+            cmd += ":PER"
+        elif function == "continuity":
+            cmd += ":CONT"
+        elif function == "diode":
+            cmd += ":DIOD"
+        elif function == "capacitance":
+            cmd += ":CAP"
         else:
-            raise ValueError("Invalid function or mode specified.")
+            raise ValueError(
+                f"Invalid function: {function}. Must be 'voltage', 'current', "
+                + "'resistance', 'frequency', 'period', 'continuity', 'diode', or "
+                + "'capacitance'."
+            )
 
         self.instrument.write(cmd)
 
-    def measure(self, function, mode=None):
+    def measure(self, function, mode):
+        """Perform a measurement using the selected function.
+
+        Parameters
+        ----------
+        function : str
+            Measurement function: voltage, current, resistance, frequency, period,
+            continuity, diode, or capacitance.
+        mode : str or None
+            Mode of the measurement function. The valid modes for each function that
+            has multiple modes are:
+                voltage: dc (defualt), ac
+                current: dc (defualt), ac
+                resistance: 2-wire (defualt), 4-wire
+
+            If `None`, the default mode is selected.
         """
-        使用选定的功能和模式进行测量。
-        
-        :param function: 测量功能，例如 'voltage'（电压）, 'current'（电流）, 'resistance'（电阻）
-        :param mode: 测量功能的模式，例如 'dc'（直流）, 'ac'（交流）, '2-wire'（二线制）, '4-wire'（四线制）
-        :return: 测量得到的数值
-        """ 
-        self.set_function(function, mode)
-        return float(self.instrument.query(f":MEAS{function.upper()}?").strip())
+        cmd = ":MEAS"
+
+        if function == "voltage":
+            cmd += ":VOLT"
+            if (mode is None) or (mode == "dc"):
+                cmd += ":DC?"
+            elif mode == "ac":
+                cmd += ":AC?"
+            else:
+                raise ValueError(f"Invalid voltage mode: {mode}. Must be 'ac' or 'dc'.")
+        elif function == "current":
+            cmd += ":CURR"
+            if (mode is None) or (mode == "dc"):
+                cmd += ":DC?"
+            elif mode == "ac":
+                cmd += ":AC?"
+            else:
+                raise ValueError(f"Invalid current mode: {mode}. Must be 'ac' or 'dc'.")
+        elif function == "resistance":
+            if (mode is None) or (mode == "2-wire"):
+                cmd += ":RES?"
+            elif mode == "4-wire":
+                cmd += ":FRES?"
+            else:
+                raise ValueError(
+                    f"Invalid resistance mode: {mode}. Must be '2-wire' or '4-wire'."
+                )
+        elif function == "frequency":
+            cmd += ":FREQ?"
+        elif function == "period":
+            cmd += ":PER?"
+        elif function == "continuity":
+            cmd += ":CONT?"
+        elif function == "diode":
+            cmd += ":DIOD?"
+        elif function == "capacitance":
+            cmd += ":CAP?"
+        else:
+            raise ValueError(
+                f"Invalid function: {function}. Must be 'voltage', 'current', "
+                + "'resistance', 'frequency', 'period', 'continuity', 'diode', or "
+                + "'capacitance'."
+            )
+
+        return float(self.instr.query(cmd).strip("\n"))
 
 # 使用示例
 if __name__ == "__main__":
-    resource_name = "'USB0::0x0699::0x03A2::C040194::INSTR'" 
-    multimeter = DP3058(resource_name, reset=True)
+    resource_name = 'USB0::0x1AB1::0x09C4::DM3L195201332::INSTR'
+    multimeter = DM3058(resource_name)
     print("Multimeter ID:", multimeter.get_id())
+    multimeter.set_function('voltage', 'dc')
     voltage = multimeter.measure('voltage', 'dc')
     print("Measured voltage:", voltage, "V")
-    multimeter.close()
