@@ -1,4 +1,5 @@
 import pyvisa
+import time
 
 class IT6322A:
     def __init__(self, resource_name, reset=True):
@@ -7,6 +8,7 @@ class IT6322A:
         :param resource_name: VISA资源名称, 比如说USB地址 'USB0::0x0699::0x03A2::C040194::INSTR'
         :param reset: 是否重置万用表到出厂默认设置, 这里默认重置
         """
+        
         self.rm = pyvisa.ResourceManager()
         self.instrument = self.rm.open_resource(resource_name)
         if reset:
@@ -29,36 +31,45 @@ class IT6322A:
         """关闭直流电源的连接"""
         self.instrument.close()
 
+    def select_channel(self, channel):
+        """
+        切换到指定的通道。
+        :param channel: 通道号，可以是 'CH1', 'CH2' 或 'CH3'
+        """
+        if channel in ('CH1', 'CH2', 'CH3'):
+            cmd = f"INSTrument:SELect {channel}"
+            self.instrument.write(cmd)
+        else:
+            raise ValueError("Invalid channel. Must be 'CH1', 'CH2', or 'CH3'.")
+        
     def set_voltage(self, channel, voltage):
         """
         设置指定通道的电压级别。
         """
-        cmd = f"SOURce:CHANnel{channel}"
+        self.select_channel(channel)
+        cmd = f"SOURce:VOLTage {voltage:.3f}"  # 保留两位小数
         self.instrument.write(cmd)
-        cmd = f"SOURce:VOLTage {voltage}"
-        self.instrument.write(cmd)
+        
 
     def set_current(self, channel, current):
         """
         设置指定通道的电流级别。
         """
-        cmd = f"SOURce:CHANnel{channel}"
+        self.select_channel(channel)
+        cmd = f"SOURce:CURRent {current:.3f}"  # 保留两位小数
         self.instrument.write(cmd)
-        cmd = f"SOURce:CURRent {current}"
-        self.instrument.write(cmd)
-
-    def output_on(self, channel):
+    def output_on(self):
         """
         打开指定通道的输出。
         """
-        self.select_channel(channel)  # 选择通道
         self.instrument.write("OUTPut ON")
 
     def output_off(self, channel):
         """
         关闭指定通道的输出。
         """
-        self.select_channel(channel)  # 选择通道
+        cmd = f"SOURce:CHANnel{channel}"
+        self.instrument.write(cmd)  # 选择通道
         self.instrument.write("OUTPut OFF")
 
     def get_voltage(self, channel):
@@ -81,14 +92,17 @@ class IT6322A:
         cmd = f"MEASure:CURRent:DC? CH{channel}"
         return float(self.instrument.query(cmd))
 
+
 # 使用示例
 if __name__ == "__main__":
-    resource_name = "USB0::0xFFFF::0x6300::602071010727630016::INSTR" 
-    power_supply = IT6322A(resource_name, reset=True)
-    power_supply.output_on(1) 
-    power_supply.set_voltage(1, 5)  # 在通道1上设置电压为5V
-    power_supply.set_current(1, 1) 
-    print(f"Voltage: {power_supply.get_voltage(1)}V")
-    print(f"Current: {power_supply.get_current(1)}A")
-    power_supply.output_off(1)  
-    power_supply.close()
+
+    resource_name = 'USB0::0xFFFF::0x6300::602071010727730104::INSTR'
+    power_supply = IT6322A(resource_name)
+    power_supply.output_on()
+
+
+    for voltage in range(0, 7, 1):
+        power_supply.set_voltage('CH2', voltage)
+        time.sleep(1)
+            
+            
