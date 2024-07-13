@@ -1,26 +1,11 @@
 import pyvisa
+import time
 
-class DM3058:
+class DM858E:
     def __init__(self, resource_name, reset=True):
-        """
-        初始化DP3058万用表。
-        :param resource_name: VISA资源名称, 比如说USB地址 'USB0::0x0699::0x03A2::C040194::INSTR'
-        :param reset: 是否重置万用表到出厂默认设置, 这里默认重置
-        """
         self.rm = pyvisa.ResourceManager()
         self.instrument = self.rm.open_resource(resource_name)
         
-
-        if reset:
-            self.reset()
-        # 检查连接
-        if "RIGOL" in self.get_id():
-            print("DM3058 connected successfully.")
-        else:
-            raise ValueError("Failed to connect to DM3058.")
-
-
-        self.instrument.timeout = 2000
     def reset(self):
         """重置万用表"""
         self.instrument.write("*RST")
@@ -31,24 +16,11 @@ class DM3058:
 
     def get_id(self):
         """获取万用表的身份识别字符串"""
-        return self.instrument.query("*IDN?").strip("\n")
+        return self.instrument.query("*IDN?").strip()
 
     def set_function(self, function, mode=None):
         """Set the current measurement function.
 
-        Parameters
-        ----------
-        function : str
-            Measurement function: voltage, current, resistance, frequency, period,
-            continuity, diode, or capacitance.
-        mode : str or None
-            Mode of the measurement function. The valid modes for each function that
-            has multiple modes are:
-                voltage: dc (defualt), ac
-                current: dc (defualt), ac
-                resistance: 2-wire (defualt), 4-wire
-
-            If `None`, the default mode is selected.
         """
         cmd = ":FUNC"
 
@@ -99,20 +71,7 @@ class DM3058:
     def measure(self, function, mode):
         """Perform a measurement using the selected function.
 
-        Parameters
-        ----------
-        function : str
-            Measurement function: voltage, current, resistance, frequency, period,
-            continuity, diode, or capacitance.
-        mode : str or None
-            Mode of the measurement function. The valid modes for each function that
-            has multiple modes are:
-                voltage: dc (defualt), ac
-                current: dc (defualt), ac
-                resistance: 2-wire (defualt), 4-wire
-
-            If `None`, the default mode is selected.
-        """
+               """
         cmd = ":MEAS"
 
         if function == "voltage":
@@ -157,13 +116,12 @@ class DM3058:
                 + "'capacitance'."
             )
 
-        return float(self.instr.query(cmd).strip("\n"))
+        return float(self.instrument.query(cmd).strip())
 
-# 使用示例
+
 if __name__ == "__main__":
-    resource_name = 'USB0::0x1AB1::0x09C4::DM3L195201332::INSTR'
-    multimeter = DM3058(resource_name)
-    print("Multimeter ID:", multimeter.get_id())
-    multimeter.set_function('voltage', 'dc')
-    voltage = multimeter.measure('voltage', 'dc')
-    print("Measured voltage:", voltage, "V")
+    resource_name ='USB0::0x1AB1::0x210B::DM8E260300157::INSTR'
+    multimeter = DM858E(resource_name)
+    print(multimeter.measure('voltage','dc'))
+
+

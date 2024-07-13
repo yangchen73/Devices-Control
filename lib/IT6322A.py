@@ -11,8 +11,6 @@ class IT6322A:
         
         self.rm = pyvisa.ResourceManager()
         self.instrument = self.rm.open_resource(resource_name)
-        if reset:
-            self.reset()
         # 检查连接
         if "ITECH" in self.get_id():
             print("IT6322A connected successfully.")
@@ -79,7 +77,7 @@ class IT6322A:
         :param channel: 通道号 (1, 2, 或 3)
         :return: 测量到的电压值
         """
-        cmd = f"MEASure:VOLTage:DC? CH{channel}"
+        cmd = f"CURR {channel}"
         return float(self.instrument.query(cmd))
 
     def get_current(self, channel):
@@ -95,14 +93,10 @@ class IT6322A:
 
 # 使用示例
 if __name__ == "__main__":
-
-    resource_name = 'USB0::0xFFFF::0x6300::602071010727730104::INSTR'
+    resource_name = 'USB0::0x1AB1::0x210B::DM8E260300157::INSTR'
     power_supply = IT6322A(resource_name)
     power_supply.output_on()
+    power_supply.set_voltage('CH2', 1)
+    power_supply.set_current('CH2', 0)
 
-
-    for voltage in range(0, 7, 1):
-        power_supply.set_voltage('CH2', voltage)
-        time.sleep(1)
-            
             
