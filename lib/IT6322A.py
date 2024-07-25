@@ -93,10 +93,10 @@ class IT6322A:
 
 # 使用示例
 if __name__ == "__main__":
-    resource_name = 'USB0::0x1AB1::0x210B::DM8E260300157::INSTR'
+    resource_name = 'USB0::0xFFFF::0x6300::602071010727630041::INSTR'
     power_supply = IT6322A(resource_name)
     power_supply.output_on()
-    power_supply.set_voltage('CH2', 1)
-    power_supply.set_current('CH2', 0)
+    power_supply.set_voltage('CH3', 1)
+    power_supply.set_current('CH3', 0)
 
             
