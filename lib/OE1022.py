@@ -18,7 +18,16 @@ class OE1022:
         return self.send_command("*IDN?")
     def reset(self):
         self.send_command("REST")
-
+    
+    def set_harmonic(self, channel, harmonic_order):
+        """
+        使用 HARM i, j 命令设置谐波检测
+        channel: 谐波通道编号 (1 或 2)
+        harmonic_order: 谐波阶数 (1 到 32767)
+        """
+        command = f"HARM {channel}, {harmonic_order}\r"
+        self.send_command(command)
+    
     def query_output_parameter(self, param_code):
         """
         使用OUTP?i命令查询特定的输出参数值
@@ -30,6 +39,9 @@ class OE1022:
         return response
     def get_start(self):
         self.send_command("STRD")
+
+    def stop(self):
+        self.send_command("PAUS")
 
     def set_buffer_selection(self, buffer_num, parameter):
         command = f"SSLE {buffer_num}, {parameter}\r"
@@ -65,9 +77,12 @@ def calculate_statistics(data_values):
 
 if __name__ == "__main__":
     lock_in_amp = OE1022('/dev/cu.usbserial-110')  
+    lock_in_amp.set_harmonic(1,1)
+    lock_in_amp.set_harmonic(1,2)
     lock_in_amp.reset()
-    lock_in_amp.set_buffer_selection(1, 'θ')
+    lock_in_amp.set_buffer_selection(1, 'Rh1')
     lock_in_amp.get_start()
     time.sleep(3)
+    lock_in_amp.stop()
     value = lock_in_amp.read_buffer_data(1, 0, 50)
     print(calculate_statistics(value))
