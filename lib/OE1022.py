@@ -21,7 +21,7 @@ class OE1022:
     
     def set_harmonic(self, channel, harmonic_order):
         """
-        使用 HARM i, j 命令设置谐波检测
+        使用 HARM i=通道, j=1、2 命令设置谐波检测
         channel: 谐波通道编号 (1 或 2)
         harmonic_order: 谐波阶数 (1 到 32767)
         """
@@ -44,9 +44,14 @@ class OE1022:
         self.send_command("PAUS")
 
     def set_buffer_selection(self, buffer_num, parameter):
+    
         command = f"SSLE {buffer_num}, {parameter}\r"
         return self.send_command(command)
     
+    def get_length_of_buffer(self):
+        
+        return self.send_command("SPTS")
+
     def read_buffer_data(self, buffer_num, start_index, length):
         """
         使用 TRCA? i, j, k 命令读取数据缓存区的数据，并计算平均值
