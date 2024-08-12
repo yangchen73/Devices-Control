@@ -11,9 +11,15 @@ generator = DG4202(resource_name)
 data = []
 amp_list = []
 
+#疑问1：reset()的默认设置到底是什么？它是否符合我们的测量要求？
+#疑问2：set_harmonic()的第一个参数是什么意思？
 lock_in_amp.reset()
 lock_in_amp.set_harmonic(1,1)
 lock_in_amp.set_buffer_selection(1, 'Rh1')
+
+for i in range(0, 41, 2):
+    amp = 6.03148 * i - 0.13831
+    amp_list.append(amp)
 
 for amp in amp_list:
     generator.apply_sine_wave(1, 3.14, amp , 0, 0)
