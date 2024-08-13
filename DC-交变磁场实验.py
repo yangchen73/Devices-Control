@@ -1,4 +1,4 @@
-from lib.DG4202 import DG4202
+from lib.DG4062 import DG4062
 from lib.OE1022 import OE1022
 import time
 import os
@@ -7,7 +7,7 @@ import numpy as np
 resource_name = 'USB0::0x1AB1::0x0641::DG4E195204310::INSTR'
 resource_name2 = 'USB0::0x1AB1::0x210B::DM8E260300157::INSTR'
 lock_in_amp = OE1022(resource_name2)
-generator = DG4202(resource_name)
+generator = DG4062(resource_name)
 data = []
 amp_list = []
 

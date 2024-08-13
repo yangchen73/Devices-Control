@@ -1,7 +1,7 @@
 import pyvisa
+import time
 
-
-class DG4202:
+class DG4062:
     def __init__(self, resource_name, reset=True):
         self.rm = pyvisa.ResourceManager()
         self.waveform = self.rm.open_resource(resource_name)
@@ -40,9 +40,11 @@ class DG4202:
         self.waveform.write(command)
 
 
-if __name__ == "__main__":
-    resource_name = 'USB0::0x1AB1::0x0641::DG4E195204310::INSTR'
-    generator = DG4202(resource_name)
+# if __name__ == "__main__":
+#     resource_name = 'USB0::0x1AB1::0x0641::DG4E182101266::INSTR'
+#     generator = DG4062(resource_name)
 
-    generator.apply_sine_wave(1, 120, 5.5, 1.5, 90)
-    generator.set_output_state(1,'ON')
+# for amp in range(0, 120, 10):
+#     generator.apply_sine_wave(1, amp, 5.5, 1.5, 90)
+#     time.sleep(5)
+#     generator.set_output_state(1,'ON')

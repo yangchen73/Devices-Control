@@ -65,23 +65,23 @@ class OE1022:
         data_values = [float(point) for point in data_points]
         return data_values
 
-def calculate_statistics(data_values):
-    """
-    计算数据的平均值、方差和标准差
-    :param data_values: 数据列表
-    :return: 平均值、方差、标准差
-    """
-    n = len(data_values)
-    if n == 0:
-        return None, None, None
+    def calculate_statistics(data_values):
+        """
+        计算数据的平均值、方差和标准差
+        :param data_values: 数据列表
+        :return: 平均值、方差、标准差
+        """
+        n = len(data_values)
+        if n == 0:
+            return None, None, None
 
-    mean = sum(data_values) / n
-    variance = sum((x - mean) ** 2 for x in data_values) / n
-    std_deviation = math.sqrt(variance)
-    return mean, variance, std_deviation
+        mean = sum(data_values) / n
+        variance = sum((x - mean) ** 2 for x in data_values) / n
+        std_deviation = math.sqrt(variance)
+        return mean, variance, std_deviation
 
 if __name__ == "__main__":
-    lock_in_amp = OE1022('/dev/cu.usbserial-110')  
+    lock_in_amp = OE1022('/dev/cu.usbserial-1120')  
     lock_in_amp.set_harmonic(1,1)
     lock_in_amp.set_harmonic(1,2)
     lock_in_amp.reset()
@@ -90,4 +90,4 @@ if __name__ == "__main__":
     time.sleep(3)
     lock_in_amp.stop()
     value = lock_in_amp.read_buffer_data(1, 0, 50)
-    print(calculate_statistics(value))
+    print(lock_in_amp.calculate_statistics(value))
