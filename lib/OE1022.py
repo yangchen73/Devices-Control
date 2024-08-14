@@ -62,8 +62,16 @@ class OE1022:
         command = f"TRCA? {buffer_num}, {start_index}, {length}\r"
         response = self.send_command(command)
         data_points = response.split(',')
-        data_values = [float(point) for point in data_points]
+        data_values = [point for point in data_points]
         return data_values
+
+    def coverter(num):
+        if 'e' in num:
+            num = num[:-2]
+            num = float(num)
+            num = num/10
+            return num
+
 
     def calculate_statistics(data_values):
         """

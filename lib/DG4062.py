@@ -40,11 +40,14 @@ class DG4062:
         self.waveform.write(command)
 
 
-# if __name__ == "__main__":
-#     resource_name = 'USB0::0x1AB1::0x0641::DG4E182101266::INSTR'
-#     generator = DG4062(resource_name)
+if __name__ == "__main__":
+    resource_name = 'USB0::0x1AB1::0x0641::DG4E182101266::INSTR'
+    generator = DG4062(resource_name)
 
 # for amp in range(0, 120, 10):
-#     generator.apply_sine_wave(1, amp, 5.5, 1.5, 90)
+#     generator.apply_sine_wave(1, amp, 14.4e-3, 0, 0)
 #     time.sleep(5)
 #     generator.set_output_state(1,'ON')
+
+# generator.apply_sine_wave(1, 3.14, 14.4e-3, 0, 0)
+# generator.set_output_state(1,'ON')

@@ -35,5 +35,5 @@ power_supply.output_off('CH2')
 power_supply.output_off('CH1')
 power_supply.output_off('CH3')
 data_dir = '/Users/a1-6/VScode/Physic Experiment Game/Devices-Control/Data'
-file_path = os.path.join(data_dir, '6+6_calibration experiment.csv')
+file_path = os.path.join(data_dir, '6+6_calibration experiment(差动).csv')
 np.savetxt(file_path, data, delimiter=",")
