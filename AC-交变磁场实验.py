@@ -12,7 +12,7 @@ data = []
 amp_list = []
 
 #疑问1：reset()的默认设置到底是什么？它是否符合我们的测量要求？
-#疑问2：set_harmonic()的第一个参数是什么意思？
+#疑问2：set_harmonic()的第一个参数是什么意思——谐波通道
 lock_in_amp.set_harmonic(1,1)
 lock_in_amp.set_harmonic(2,2)
 # lock_in_amp.set_buffer_selection(2, 'Rh2')
