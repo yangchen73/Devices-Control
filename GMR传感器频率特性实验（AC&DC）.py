@@ -1,6 +1,6 @@
 from lib.DG4062 import DG4062
 from lib.OE1022 import OE1022
-from lib.DP2031 import DP2031
+from lib.IT6322A import IT6322A
 import time
 import os
 import numpy as np
@@ -11,14 +11,14 @@ resource_name3 = 'USB0::0x1AB1::0xA4A8::DP2A242800127::INSTR'
 
 generator = DG4062(resource_name1)
 lock_in_amp = OE1022(resource_name2)
-power_supply = DP2031(resource_name3)
+power_supply = IT6322A(resource_name3)
 data = []
-freq_list = [3.14,10,20,30,50,100,200,300,500,1000,1500,2000,2500,3000,3500,4000,4500,5000,5500,6000,6500,7000]
+freq_list = [1,1.6,2.5,4,6.5,10,16,25,40,65,100,160,250,400,650,1000,1600,2500,4000,6500,10000,]
 
 #设置励磁电流大小分别为3mA、5mA、10mA、20mA
 current = 3
-power_supply.set_voltage('CH3', 5)
-power_supply.set_current('CH3', current*0.001)
+power_supply.set_voltage('CH1', 5)
+power_supply.set_current('CH1', current*0.001)
 power_supply.output_on()
 
 # 改变AC恒流源的频率大小并进行测量
