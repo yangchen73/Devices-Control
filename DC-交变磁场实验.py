@@ -17,8 +17,9 @@ lock_in_amp.set_harmonic(2,2)
 
 
 # 直接设置励磁交变电压（mVpp）的幅值
-for amp in range(50,1601,50):
-    amp_list.append(amp*0.001)
+for i in range(0.2,2.1,0.1):
+    amp = 16.78*i - 1.781
+    amp_list.append(amp)
 
 #设置REF的频率
 generator.apply_sine_wave(2, 6.28, 0.1, 0, 0)
