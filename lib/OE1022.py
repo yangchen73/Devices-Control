@@ -73,7 +73,7 @@ class OE1022:
             return num
 
 
-    def calculate_statistics(data_values):
+    def calculate_statistics(self,data_values):
         """
         计算数据的平均值、方差和标准差
         :param data_values: 数据列表
@@ -82,7 +82,8 @@ class OE1022:
         n = len(data_values)
         if n == 0:
             return None, None, None
-
+        
+        data_values = [float(item) for item in data_values]
         mean = sum(data_values) / n
         variance = sum((x - mean) ** 2 for x in data_values) / n
         std_deviation = math.sqrt(variance)
