@@ -2,9 +2,9 @@ import time
 from lib.OE1022 import OE1022
 
 lock_in_amp = OE1022('/dev/cu.usbserial-1120')  
+lock_in_amp.reset()
 lock_in_amp.set_harmonic(1,1)
 lock_in_amp.set_harmonic(2,2)
-lock_in_amp.reset()
 lock_in_amp.set_buffer_selection(1, 'Rh1')
 lock_in_amp.set_buffer_selection(2, 'Rh2') 
 lock_in_amp.get_start()
