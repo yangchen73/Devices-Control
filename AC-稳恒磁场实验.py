@@ -9,24 +9,24 @@ resource_name1 = 'USB0::0x1AB1::0x0641::DG4E182101266::INSTR'
 resource_name2 = '/dev/cu.usbserial-110'
 resource_name3 = 'USB0::0x1AB1::0xA4A8::DP2A242800127::INSTR'
 
-# generator = DG4062(resource_name1)
+generator = DG4062(resource_name1)
 lock_in_amp = OE1022(resource_name2)
-# power_supply = DP2031(resource_name3)
+power_supply = DP2031(resource_name3)
 data = []
 amp_list = []
 data2 = []
 
 
 # # 设置交变恒流源提供1mA的交变电源
-# generator.apply_sine_wave(1, 3.14, 14.4e-3 , 0, 0)
-# generator.set_output_state(1, 'ON')
+generator.apply_sine_wave(1, 3.14, 13e-3 , 0, 0)
+generator.set_output_state(1, 'ON')
 
 # 调整DC励磁电流大小，并进行测量
 for current in range(0,41,1):
-    # power_supply.set_voltage('CH2', 5)
-    # power_supply.set_current('CH2', current*0.001)
-    # power_supply.output_on()
-    time.sleep(10)
+    power_supply.set_voltage('CH2', 5)
+    power_supply.set_current('CH2', current*0.001)
+    power_supply.output_on()
+    time.sleep(15)
     # 设置锁相放大器的参数
     lock_in_amp.reset()
     lock_in_amp.set_harmonic(1,1)
@@ -35,36 +35,15 @@ for current in range(0,41,1):
     time.sleep(3)
     lock_in_amp.stop()
     value = lock_in_amp.read_buffer_data(1, 0, 50)
-    data.append(float(value[0]))
-    print(f'Current: {current*0.1} mA, Value: {float(value[0])}')
-    # print(value[0])
-    # n = len(value)
-    # mean_value = sum(value) / n
-    # data.append(mean_value)
-    # print(f'Current: {current} mA, Mean Value: {mean_value}')
-
-# for current in range(0,51,2):
-#     power_supply.set_voltage('CH3', 5)
-#     power_supply.set_current('CH3', current*0.001)
-#     power_supply.output_on()
-#     time.sleep(15)
-#     # 设置锁相放大器的参数
-#     lock_in_amp.reset()
-#     lock_in_amp.set_harmonic(1,1)
-#     lock_in_amp.set_buffer_selection(1, 'Rh1')
-#     lock_in_amp.get_start()
-#     time.sleep(3)
-#     lock_in_amp.stop()
-#     value = lock_in_amp.read_buffer_data(1, 0, 50)
-#     data2.append(float(value[0]))
-#     print(f'Current: {current} mA, Value: {float(value[0])}')
-
+    mean, variance, std_deviation = lock_in_amp.calculate_statistics(value[1:len(value)-1])
+    print(f'Current: {current} mA, Value: {mean*1000} mV')
+    data.append(float(mean*1000))
 
 # generator.set_output_state(1, 'OFF')
 
 # 存储数据
 data_dir = '/Users/a1-6/VScode/Physic Experiment Game/Devices-Control/Data'
-file_path = os.path.join(data_dir, 'AC_交变磁场实验9-25.csv')
+file_path = os.path.join(data_dir, 'AC&DC实验10-15.csv')
 np.savetxt(file_path, data, delimiter=",")
 
 # data_dir = '/Users/a1-6/VScode/Physic Experiment Game/Devices-Control/Data'

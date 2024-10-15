@@ -45,7 +45,7 @@ class OE1022:
 
     def set_buffer_selection(self, buffer_num, parameter):
     
-        command = f"SSLE {buffer_num}, {parameter}\r"
+        command = f"SSLE {buffer_num}, {parameter}"
         return self.send_command(command)
     
     def get_length_of_buffer(self):
@@ -59,7 +59,7 @@ class OE1022:
         start_index: 起始索引（从哪个数据点开始读取）
         length: 要读取的数据长度
         """
-        command = f"TRCA? {buffer_num}, {start_index}, {length}\r"
+        command = f"TRCA? {buffer_num}, {start_index}, {length}"
         response = self.send_command(command)
         data_points = response.split(',')
         data_values = [point for point in data_points]
@@ -90,11 +90,14 @@ class OE1022:
         return mean, variance, std_deviation
 
 if __name__ == "__main__":
-    lock_in_amp = OE1022('/dev/cu.usbserial-1120')  
+    lock_in_amp = OE1022('/dev/cu.usbserial-1120')
+     
     lock_in_amp.set_harmonic(1,1)
-    lock_in_amp.set_harmonic(1,2)
-    lock_in_amp.reset()
+    lock_in_amp.set_harmonic(2,2)
+    
     lock_in_amp.set_buffer_selection(1, 'Rh1')
+    lock_in_amp.set_buffer_selection(2, 'Rh2')
+    lock_in_amp.reset() 
     lock_in_amp.get_start()
     time.sleep(3)
     lock_in_amp.stop()
